@@ -27,18 +27,16 @@ class PostController extends Controller
     }
 
 
-    public function upload(Request $request)
+    public function uploadImage(Request $request)
     {
-        if ($request->hasFile('upload')) {
-            $originalName = $request->file('upload')->getClientOriginalName();
-            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
-            $extension = $request->file('upload')->getClientOriginalExtension();
-            $fileName = $fileName . '_' . time() . '.' . $extension;
+        $uploadedFile = $request->file('file'); // 'file' is the name attribute in the FormData sent by TinyMCE
+        $filename = $uploadedFile->getClientOriginalName(); // Get the original file name
+        $path = $uploadedFile->storeAs('public/uploads', $filename); // Store the file in storage/app/public/uploads folder
 
-            $request->file('upload')->move(public_path('assets/post/'), $fileName);
-            $url = url('assets/post/' . $fileName);
-            return response()->json(['fileName' => $fileName, 'uploaded' => 1, 'url' => $url]);
-        }
+        // Generate URL for the uploaded file
+        $url = asset('storage/uploads/' . $filename);
+
+        return response()->json(['location' => $url]); // Respond with the location URL
     }
     /**
      * Show the form for creating a new resource.
@@ -60,6 +58,8 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+
+        // dd($request);
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'small_title' => 'nullable|string|max:255',

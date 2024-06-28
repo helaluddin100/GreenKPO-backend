@@ -47,7 +47,8 @@ Auth::routes();
 Route::namespace('App\Http\Controllers')->group(function () {
     Route::group(['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin']], function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::post('/upload', 'PostController@upload')->name('upload');
+        Route::post('/upload/image', 'PostController@uploadImage')->name('upload.image');
+
 
         Route::resource('post', 'PostController');
         Route::resource('tag', 'TagController');
