@@ -29,9 +29,24 @@ class Post extends Model
         'tag_id' => 'array',
     ];
 
+
+
     // Define an accessor to retrieve tag names
     public function getTagNamesAttribute()
     {
-        return Tag::whereIn('id', $this->tag_id)->pluck('name')->toArray();
+        if (empty($this->tag_id)) {
+            return [];
+        }
+
+        // Ensure tag_id is an array (this should be handled by the cast, but it's a safety check)
+        $tagIds = is_array($this->tag_id) ? $this->tag_id : json_decode($this->tag_id, true);
+
+        // Return an empty array if tagIds is not an array or empty
+        if (!is_array($tagIds) || empty($tagIds)) {
+            return [];
+        }
+
+        // Fetch tag names based on tagIds
+        return Tag::whereIn('id', $tagIds)->pluck('name')->toArray();
     }
 }

@@ -58,8 +58,12 @@
                                         <select id="tag_id" name="tag_id[]" class="js-example-basic-multiple form-select"
                                             multiple="multiple" data-width="100%">
                                             @foreach ($tags as $tag)
-                                                <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                                <option value="{{ $tag->id }}">
+                                                    {{ $tag->name }}
+                                                </option>
                                             @endforeach
+
+                                        </select>
                                         </select>
                                     </div>
                                 </div>

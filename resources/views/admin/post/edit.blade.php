@@ -64,10 +64,12 @@
                                             multiple="multiple" data-width="100%">
                                             @foreach ($tags as $tag)
                                                 <option value="{{ $tag->id }}"
-                                                    {{ in_array($tag->id, json_decode($post->tag_id)) ? 'selected' : '' }}>
-                                                    {{ $tag->name }}</option>
+                                                    {{ in_array($tag->id, (array) $post->tag_id) ? 'selected' : '' }}>
+                                                    {{ $tag->name }}
+                                                </option>
                                             @endforeach
                                         </select>
+
                                     </div>
                                 </div>
                                 <div class="col-md-12">
