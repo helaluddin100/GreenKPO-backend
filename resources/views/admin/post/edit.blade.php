@@ -6,7 +6,7 @@
         <nav class="page-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Forms</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Create Post</li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Post</li>
             </ol>
         </nav>
 
@@ -16,26 +16,30 @@
                     <div class="card-body">
                         <h4 class="card-title">Meta Information</h4>
 
-                        <form action="{{ route('admin.post.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admin.post.update', $post->id) }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
+                            @method('PUT')
                             <div class="row">
 
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="meta_title" class="form-label">Meta Title</label>
-                                        <input type="text" id="meta_title" class="form-control" name="meta_title">
+                                        <input type="text" id="meta_title" value="{{ $post->meta_title }}"
+                                            class="form-control" name="meta_title">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="meta_keyword" class="form-label">Meta Keyword</label>
-                                        <input type="text" id="meta_keyword" class="form-control" name="meta_keyword">
+                                        <input type="text" id="meta_keyword" class="form-control"
+                                            value="{{ $post->meta_keyword }}" name="meta_keyword">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="meta_descriptions" class="form-label">Meta Description</label>
-                                        <textarea id="meta_descriptions" class="form-control" name="meta_descriptions" rows="3"></textarea>
+                                        <textarea id="meta_descriptions" class="form-control" name="meta_descriptions" rows="3">{{ $post->meta_descriptions }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -49,7 +53,8 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="title" class="form-label">Title</label>
-                                        <input type="text" id="title" class="form-control" name="title">
+                                        <input type="text" id="title" class="form-control"
+                                            value="{{ $post->title }}" name="title">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -58,7 +63,9 @@
                                         <select id="tag_id" name="tag_id[]" class="js-example-basic-multiple form-select"
                                             multiple="multiple" data-width="100%">
                                             @foreach ($tags as $tag)
-                                                <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                                <option value="{{ $tag->id }}"
+                                                    {{ in_array($tag->id, json_decode($post->tag_id)) ? 'selected' : '' }}>
+                                                    {{ $tag->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -66,7 +73,7 @@
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="small_title" class="form-label">Small Description</label>
-                                        <textarea id="small_title" class="form-control" name="small_title" rows="3"></textarea>
+                                        <textarea id="small_title" class="form-control" name="small_title" rows="3">{{ $post->small_title }}</textarea>
                                     </div>
                                 </div>
 
@@ -80,23 +87,24 @@
 
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <img id="imagePreview" src="#" alt="Selected Image"
-                                            style="max-width: 100px; display: none;">
+                                        <img id="imagePreview" src="{{ asset($post->image) }}" alt="Selected Image"
+                                            style="max-width: 100px; display: {{ $post->image ? 'block' : 'none' }};">
                                     </div>
                                 </div>
 
                                 <div class="col-md-12">
                                     <div class="col-xl-12 col-lg-12 col-12 form-group">
                                         <label for="des">Description *</label>
-                                        <textarea name="description"  id="open-source-plugins" class="form-control" cols="30" rows="10"></textarea>
+                                        <textarea name="description" id="open-source-plugins" class="form-control" cols="30" rows="10">{!! $post->description !!}</textarea>
                                     </div>
                                 </div>
-                                
+
                             </div>
 
                             <div class="mb-3">
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" checked name="status" id="termsCheck">
+                                    <input type="checkbox" class="form-check-input" {{ $post->status ? 'checked' : '' }}
+                                        name="status" id="termsCheck">
                                     <label class="form-check-label" for="termsCheck">
                                         Active
                                     </label>
@@ -113,63 +121,115 @@
 @endsection
 
 @section('js')
-    <script src="https://cdn.tiny.cloud/1/qagffr3pkuv17a8on1afax661irst1hbr4e6tbv888sz91jc/tinymce/7/tinymce.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/qagffr3pkuv17a8on1afax661irst1hbr4e6tbv888sz91jc/tinymce/5/tinymce.min.js">
+    </script>
+
+    <style>
+        .progress-wrapper {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 9999;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 30px;
+            background-color: green;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+
+    <div id="progressWrapper" class="progress-wrapper">
+        <div id="progressText">Uploading...</div>
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
 
     <script>
-       const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
+        const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-tinymce.init({
-  selector: 'textarea#open-source-plugins',
-  plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
-  editimage_cors_hosts: ['picsum.photos'],
-  menubar: 'file edit view insert format tools table help',
-  toolbar: "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
-  autosave_ask_before_unload: true,
-  autosave_interval: '30s',
-  autosave_prefix: '{path}{query}-{id}-',
-  autosave_restore_when_empty: false,
-  autosave_retention: '2m',
-  image_advtab: true,
-  link_list: [
-    { title: 'My page 1', value: 'https://www.tiny.cloud' },
-    { title: 'My page 2', value: 'http://www.moxiecode.com' }
-  ],
-  image_list: [
-    { title: 'My page 1', value: 'https://www.tiny.cloud' },
-    { title: 'My page 2', value: 'http://www.moxiecode.com' }
-  ],
-  image_class_list: [
-    { title: 'None', value: '' },
-    { title: 'Some class', value: 'class-name' }
-  ],
-  importcss_append: true,
-  file_picker_callback: (callback, value, meta) => {
-    /* Provide file and text for the link dialog */
-    if (meta.filetype === 'file') {
-      callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
-    }
+        tinymce.init({
+            selector: 'textarea#open-source-plugins',
+            plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+            editimage_cors_hosts: ['picsum.photos'],
+            menubar: 'file edit view insert format tools table help',
+            toolbar: "undo redo | bold italic underline strikethrough | align numlist bullist | link image media | forecolor backcolor removeformat | code fullscreen preview",
+            autosave_ask_before_unload: true,
+            autosave_interval: '30s',
+            autosave_prefix: '{path}{query}-{id}-',
+            autosave_restore_when_empty: false,
+            autosave_retention: '2m',
+            image_advtab: true,
+            file_picker_callback: function(callback, value, meta) {
+                if (meta.filetype === 'image') {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
 
-    /* Provide image and alt text for the image dialog */
-    if (meta.filetype === 'image') {
-      callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
-    }
+                    input.onchange = function() {
+                        const file = this.files[0];
+                        const formData = new FormData();
+                        formData.append('file', file);
 
-    /* Provide alternative source and posted for the media dialog */
-    if (meta.filetype === 'media') {
-      callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
-    }
-  },
-  height: 600,
-  image_caption: true,
-  quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-  noneditable_class: 'mceNonEditable',
-  toolbar_mode: 'sliding',
-  contextmenu: 'link image table',
-  skin: useDarkMode ? 'oxide-dark' : 'oxide',
-  content_css: useDarkMode ? 'dark' : 'default',
-  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
-});
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', '{{ route('admin.upload.image') }}', true); // Use the named route
+                        xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
 
+                        xhr.upload.addEventListener('progress', function(e) {
+                            if (e.lengthComputable) {
+                                const percentComplete = (e.loaded / e.total) * 100;
+                                document.getElementById('progressWrapper').style.display = 'block';
+                                document.getElementById('progressBar').style.width =
+                                    percentComplete + '%';
+                                document.getElementById('progressText').innerText = 'Uploading: ' +
+                                    Math.round(percentComplete) + '%';
+                            }
+                        }, false);
+
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                const data = JSON.parse(xhr.responseText);
+                                callback(data.location, {
+                                    alt: file.name
+                                });
+                                document.getElementById('progressWrapper').style.display = 'none';
+                                document.getElementById('progressText').innerText = 'Uploading...';
+                                document.getElementById('progressBar').style.width = '0%';
+                            } else {
+                                console.error('Upload failed');
+                            }
+                        };
+
+                        xhr.send(formData);
+                    };
+
+                    input.click();
+                }
+            },
+            height: 600,
+            image_caption: true,
+            quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+            noneditable_class: 'mceNonEditable',
+            toolbar_mode: 'sliding',
+            contextmenu: 'link image table',
+            skin: useDarkMode ? 'oxide-dark' : 'oxide',
+            content_css: useDarkMode ? 'dark' : 'default',
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+        });
+
+        function previewImage(event) {
+            var output = document.getElementById('imagePreview');
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.style.display = 'block';
+        }
     </script>
 @endsection

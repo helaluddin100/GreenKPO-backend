@@ -1,13 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Str;
 
-use App\Models\Post;
 use App\Models\Tag;
+use App\Models\Post;
+
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Auth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
 class PostController extends Controller
 {
 
@@ -27,17 +29,34 @@ class PostController extends Controller
     }
 
 
+
+
     public function uploadImage(Request $request)
     {
-        $uploadedFile = $request->file('file'); // 'file' is the name attribute in the FormData sent by TinyMCE
-        $filename = $uploadedFile->getClientOriginalName(); // Get the original file name
-        $path = $uploadedFile->storeAs('public/uploads', $filename); // Store the file in storage/app/public/uploads folder
+        // Validate the file upload
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max file size as necessary
+        ]);
 
-        // Generate URL for the uploaded file
-        $url = asset('storage/uploads/' . $filename);
+        // Handle file upload
+        if ($request->hasFile('file')) {
+            $uploadedFile = $request->file('file');
+            $filename = time() . '_' . $uploadedFile->getClientOriginalName();
+            $path = $uploadedFile->storeAs('public/uploads', $filename); // Store in 'storage/app/public/uploads'
 
-        return response()->json(['location' => $url]); // Respond with the location URL
+            // Generate URL for the uploaded file
+            $url = asset('storage/uploads/' . $filename); // Adjust as per your storage configuration
+
+            return response()->json(['location' => $url]);
+        }
+
+        return response()->json(['error' => 'File upload failed.']);
     }
+
+
+
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -48,7 +67,7 @@ class PostController extends Controller
         $tags = Tag::where('status', 1)->get();
         return view('admin.post.create', compact('tags'));
     }
-    
+
 
     /**
      * Store a newly created resource in storage.
@@ -70,10 +89,10 @@ class PostController extends Controller
             'meta_descriptions' => 'nullable|string|max:255',
             'meta_keyword' => 'nullable|string|max:255',
         ]);
-    
+
         $slug = Str::slug($validatedData['title']);
         $status = $request->has('status') ? true : false;
-    
+
         $post = new Post([
             'author' => Auth::user()->id,
             'title' => $validatedData['title'],
@@ -86,20 +105,20 @@ class PostController extends Controller
             'meta_keyword' => $validatedData['meta_keyword'],
             'status' => $status,
         ]);
-    
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('assets/images/post'), $imageName);
             $post->image = 'assets/images/post/' . $imageName;
         }
-    
+
         $post->save();
-    
+
         return redirect()->route('admin.post.index')->with('success', 'Post created successfully.');
     }
-    
-    
+
+
     /**
      * Display the specified resource.
      *
@@ -117,50 +136,63 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
         $tags = Tag::where('status', 1)->get();
 
-        return view('admin.post.edit', compact('post','tags'));
+        return view('admin.post.edit', compact('post', 'tags'));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'author' => 'required|string|max:255',
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'small_title' => 'nullable|string|max:255',
-            'image' => 'required|string',
+            'image' => 'nullable|image',
             'description' => 'required',
-            'tag_id' => 'nullable|json',
-            'slug' => 'required|string|unique:posts,slug,' . $id,
+            'tag_id' => 'required|array',
             'meta_title' => 'nullable|string|max:255',
             'meta_descriptions' => 'nullable|string|max:255',
             'meta_keyword' => 'nullable|string|max:255',
-            'view_count' => 'nullable|string|max:255',
-            'status' => 'boolean',
         ]);
 
+        // Find the post by ID
         $post = Post::findOrFail($id);
-        $post->author = $request->get('author');
-        $post->title = $request->get('title');
-        $post->small_title = $request->get('small_title');
-        $post->image = $request->get('image');
-        $post->description = $request->get('description');
-        $post->tag_id = $request->get('tag_id');
-        $post->slug = Str::slug($request->get('slug'));
-        $post->meta_title = $request->get('meta_title');
-        $post->meta_descriptions = $request->get('meta_descriptions');
-        $post->meta_keyword = $request->get('meta_keyword');
-        $post->view_count = $request->get('view_count');
-        $post->status = $request->get('status', true);
+
+        // Update post fields
+        $post->title = $validatedData['title'];
+        $post->small_title = $validatedData['small_title'];
+        $post->description = $validatedData['description'];
+        $post->tag_id = json_encode($validatedData['tag_id']);
+        $post->meta_title = $validatedData['meta_title'];
+        $post->meta_descriptions = $validatedData['meta_descriptions'];
+        $post->meta_keyword = $validatedData['meta_keyword'];
+        $post->status = $request->has('status') ? true : false;
+
+        // Handle the image update
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($post->image && file_exists(public_path($post->image))) {
+                unlink(public_path($post->image));
+            }
+
+            // Save the new image
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/post'), $imageName);
+            $post->image = 'assets/images/post/' . $imageName;
+        }
 
         $post->save();
 
-        return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
+        return redirect()->route('admin.post.index')->with('success', 'Post updated successfully.');
     }
 
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
+
+        if ($post->image && file_exists(public_path($post->image))) {
+            unlink(public_path($post->image));
+        }
         $post->delete();
 
-        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
+        return redirect()->route('admin.post.index')->with('success', 'Post deleted successfully.');
     }
 }

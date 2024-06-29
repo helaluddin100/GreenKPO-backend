@@ -2,9 +2,10 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,7 +53,6 @@ Route::namespace('App\Http\Controllers')->group(function () {
 
         Route::resource('post', 'PostController');
         Route::resource('tag', 'TagController');
-
     });
 });
 

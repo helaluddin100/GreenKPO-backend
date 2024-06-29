@@ -15,18 +15,18 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('author');
-            $table->string('title');
-            $table->string('small_title')->nullable();
-            $table->string('image');
+            $table->unsignedBigInteger('author');
+            $table->string('title', 255);
+            $table->string('small_title', 255)->nullable();
+            $table->string('image', 255);
             $table->text('description');
             $table->json('tag_id')->nullable();
-            $table->string('slug')->unique();
-            $table->string('meta_title')->nullable();
-            $table->string('meta_descriptions')->nullable();
-            $table->string('meta_keyword')->nullable();
+            $table->string('slug', 255)->unique();
+            $table->string('meta_title', 255)->nullable();
+            $table->string('meta_descriptions', 255)->nullable();
+            $table->string('meta_keyword', 255)->nullable();
 
-            $table->string('view_count')->nullable();
+            $table->unsignedInteger('view_count')->default(0)->nullable();
             $table->boolean('status')->default(true);
 
             $table->timestamps();
