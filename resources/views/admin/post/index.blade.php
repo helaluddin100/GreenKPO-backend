@@ -45,9 +45,12 @@
                                             <td><img src="{{ asset($post->image) }}" alt=""></td>
                                             <td>{{ $post->author }}</td>
                                             <td>{{ $post->created_at->format('d-m-y') }}</td>
-
                                             <td>{{ $post->view_count }}</td>
-
+                                            <td>
+                                                @foreach ($post->tag_names as $tag)
+                                                    {{ $tag }}
+                                                @endforeach
+                                            </td>
                                             <td>
                                                 @if ($post->status === 1)
                                                     <span class="badge bg-success">Active</span>
@@ -61,8 +64,6 @@
                                                     <i data-feather="edit"></i>
                                                 </a>
 
-
-
                                                 @if (Auth::user()->role_id == 1)
                                                     <form id="delete_form_{{ $post->id }}"
                                                         action="{{ route('admin.post.destroy', $post->id) }}"
@@ -75,11 +76,9 @@
                                                         </button>
                                                     </form>
                                                 @endif
-
                                             </td>
                                         </tr>
                                     @endforeach
-
 
                                 </tbody>
                             </table>
