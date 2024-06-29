@@ -54,3 +54,10 @@
         </ul>
     </div>
 </nav>
+
+
+
+<div id="progressWrapper" class="progress-wrapper">
+    <div id="progressText">Uploading...</div>
+    <div class="progress-bar" id="progressBar"></div>
+</div>

@@ -20,3 +20,30 @@
 
 <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
 <link rel="stylesheet" href="{{ asset('assets/vendors/easymde/easymde.min.css') }}" />
+
+
+
+<style>
+    .progress-wrapper {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 9999;
+    }
+
+    .progress-bar {
+        width: 0;
+        height: 30px;
+        background-color: green;
+        margin-top: 10px;
+        border-radius: 5px;
+    }
+</style>
