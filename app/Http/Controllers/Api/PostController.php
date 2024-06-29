@@ -38,4 +38,16 @@ class PostController extends Controller
 
         return response()->json($lastPost);
     }
+
+
+    public function getPostBySlug($slug)
+    {
+        $post = Post::where('slug', $slug)->first();
+
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }       
+
+        return response()->json($post);
+    }
 }
