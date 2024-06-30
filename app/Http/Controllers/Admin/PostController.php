@@ -70,6 +70,8 @@ class PostController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_descriptions' => 'nullable|string|max:255',
             'meta_keyword' => 'nullable|string|max:255',
+            'read_time' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
         ]);
 
 
@@ -91,6 +93,8 @@ class PostController extends Controller
             'meta_title' => $validatedData['meta_title'],
             'meta_descriptions' => $validatedData['meta_descriptions'],
             'meta_keyword' => $validatedData['meta_keyword'],
+            'read_time' => $validatedData['read_time'],
+            'category' => $validatedData['category'],
             'status' => $status,
         ]);
 
@@ -138,6 +142,8 @@ class PostController extends Controller
             'meta_title' => 'nullable',
             'meta_descriptions' => 'nullable',
             'meta_keyword' => 'nullable',
+            'read_time' => 'nullable',
+            'category' => 'nullable',
         ]);
 
         // dd($validatedData);
@@ -153,6 +159,8 @@ class PostController extends Controller
         $post->meta_title = $validatedData['meta_title'];
         $post->meta_descriptions = $validatedData['meta_descriptions'];
         $post->meta_keyword = $validatedData['meta_keyword'];
+        $post->read_time = $validatedData['read_time'];
+        $post->category = $validatedData['category'];
         $post->status = $status;
 
         if ($request->hasFile('image')) {

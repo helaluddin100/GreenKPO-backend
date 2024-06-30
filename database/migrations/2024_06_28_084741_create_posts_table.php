@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('meta_title', 255)->nullable();
             $table->string('meta_descriptions', 255)->nullable();
             $table->string('meta_keyword', 255)->nullable();
+            $table->string('read_time', 255)->nullable();
+            $table->string('category', 255)->nullable();
 
             $table->unsignedInteger('view_count')->default(0)->nullable();
             $table->boolean('status')->default(true);
