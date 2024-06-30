@@ -64,7 +64,7 @@
                                             multiple="multiple" data-width="100%">
                                             @foreach ($tags as $tag)
                                                 <option value="{{ $tag->id }}"
-                                                    {{ in_array($tag->id, (array) $post->tag_id) ? 'selected' : '' }}>
+                                                    {{ in_array($tag->id, json_decode($post->tag_id, true) ?: []) ? 'selected' : '' }}>
                                                     {{ $tag->name }}
                                                 </option>
                                             @endforeach
@@ -121,4 +121,3 @@
 
     </div>
 @endsection
-

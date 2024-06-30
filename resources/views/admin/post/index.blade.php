@@ -41,16 +41,17 @@
                                     @foreach ($posts as $key => $post)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $post->title }}</td>
+                                            <td>{{ Str::limit($post->title, 30) }}</td>
+
                                             <td><img src="{{ asset($post->image) }}" alt=""></td>
-                                            <td>{{ $post->author }}</td>
+                                            <td>{{ $post->user->name }}</td>
                                             <td>{{ $post->created_at->format('d-m-y') }}</td>
                                             <td>{{ $post->view_count }}</td>
-                                            <td>
+                                            {{-- <td>
                                                 @foreach ($post->tag_names as $tag)
                                                     {{ $tag }}
                                                 @endforeach
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 @if ($post->status === 1)
                                                     <span class="badge bg-success">Active</span>
@@ -66,8 +67,8 @@
 
                                                 @if (Auth::user()->role_id == 1)
                                                     <form id="delete_form_{{ $post->id }}"
-                                                        action="{{ route('admin.post.destroy', $post->id) }}"
-                                                        method="post" class="d-inline">
+                                                        action="{{ route('admin.post.destroy', $post->id) }}" method="post"
+                                                        class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="button" class="btn btn-danger btn-icon delete-button"
