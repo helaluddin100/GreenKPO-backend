@@ -10,7 +10,7 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = [
-        'author',
+        'user_id',
         'title',
         'small_title',
         'image',
@@ -35,7 +35,7 @@ class Post extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'author');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Define an accessor to retrieve tag names

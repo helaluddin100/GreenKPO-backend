@@ -1,13 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Str;
 
-use App\Models\Post;
 use App\Models\Tag;
+use App\Models\Post;
+
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Auth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
 class PostController extends Controller
 {
 
@@ -30,14 +32,14 @@ class PostController extends Controller
     public function uploadImage(Request $request)
     {
         $uploadedFile = $request->file('file');
-        $filename = $uploadedFile->getClientOriginalName(); 
-        $path = $uploadedFile->storeAs('public/uploads', $filename); 
+        $filename = $uploadedFile->getClientOriginalName();
+        $path = $uploadedFile->storeAs('public/uploads', $filename);
 
         $url = asset('storage/uploads/' . $filename);
 
-        return response()->json(['location' => $url]); 
+        return response()->json(['location' => $url]);
     }
-    
+
 
 
 
@@ -49,7 +51,7 @@ class PostController extends Controller
         $tags = Tag::where('status', 1)->get();
         return view('admin.post.create', compact('tags'));
     }
-    
+
 
     /**
      * Store a newly created resource in storage.
@@ -58,54 +60,54 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-{
-    $validatedData = $request->validate([
-        'title' => 'required|string|max:255',
-        'small_title' => 'nullable|string|max:255',
-        'image' => 'required',
-        'description' => 'required',
-        'tag_id' => 'required|array',
-        'meta_title' => 'nullable|string|max:255',
-        'meta_descriptions' => 'nullable|string|max:255',
-        'meta_keyword' => 'nullable|string|max:255',
-    ]);
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'small_title' => 'nullable|string|max:255',
+            'image' => 'required',
+            'description' => 'required',
+            'tag_id' => 'required|array',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_descriptions' => 'nullable|string|max:255',
+            'meta_keyword' => 'nullable|string|max:255',
+        ]);
 
 
-    // dd($validatedData);
-    // Replace ../../../ with your app URL
-    $description = str_replace(['../../../', '../../..'], config('app.url'), $request->get('description'));
+        // dd($validatedData);
+        // Replace ../../../ with your app URL
+        $description = str_replace(['../../..', '../..'], config('app.url'), $request->get('description'));
 
 
-    $slug = Str::slug($validatedData['title']);
-    $status = $request->has('status') ? true : false;
+        $slug = Str::slug($validatedData['title']);
+        $status = $request->has('status') ? true : false;
 
-    $post = new Post([
-        'author' => Auth::user()->id,
-        'title' => $validatedData['title'],
-        'small_title' => $validatedData['small_title'],
-        'description' => $description, // Use the modified description
-        'tag_id' => json_encode($validatedData['tag_id']),
-        'slug' => $slug,
-        'meta_title' => $validatedData['meta_title'],
-        'meta_descriptions' => $validatedData['meta_descriptions'],
-        'meta_keyword' => $validatedData['meta_keyword'],
-        'status' => $status,
-    ]);
+        $post = new Post([
+            'user_id' => Auth::user()->id,
+            'title' => $validatedData['title'],
+            'small_title' => $validatedData['small_title'],
+            'description' => $description, // Use the modified description
+            'tag_id' => json_encode($validatedData['tag_id']),
+            'slug' => $slug,
+            'meta_title' => $validatedData['meta_title'],
+            'meta_descriptions' => $validatedData['meta_descriptions'],
+            'meta_keyword' => $validatedData['meta_keyword'],
+            'status' => $status,
+        ]);
 
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imageName = time() . '_' . $image->getClientOriginalName();
-        $image->move(public_path('assets/images/post'), $imageName);
-        $post->image = 'assets/images/post/' . $imageName;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/post'), $imageName);
+            $post->image = 'assets/images/post/' . $imageName;
+        }
+
+        $post->save();
+
+        return redirect()->route('admin.post.index')->with('success', 'Post created successfully.');
     }
 
-    $post->save();
 
-    return redirect()->route('admin.post.index')->with('success', 'Post created successfully.');
-}
 
-    
-    
     /**
      * Display the specified resource.
      *
@@ -123,7 +125,7 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
         $tags = Tag::where('status', 1)->get();
 
-        return view('admin.post.edit', compact('post','tags'));
+        return view('admin.post.edit', compact('post', 'tags'));
     }
     public function update(Request $request, $id)
     {
@@ -137,12 +139,12 @@ class PostController extends Controller
             'meta_descriptions' => 'nullable',
             'meta_keyword' => 'nullable',
         ]);
-    
+
         // dd($validatedData);
-        $description = str_replace([ '../../..','../..'], config('app.url'), $validatedData['description']);
-    
+        $description = str_replace(['../../..', '../..'], config('app.url'), $validatedData['description']);
+
         $status = $request->has('status') ? true : false;
-    
+
         $post = Post::findOrFail($id);
         $post->title = $validatedData['title'];
         $post->small_title = $validatedData['small_title'];
@@ -152,19 +154,19 @@ class PostController extends Controller
         $post->meta_descriptions = $validatedData['meta_descriptions'];
         $post->meta_keyword = $validatedData['meta_keyword'];
         $post->status = $status;
-    
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('assets/images/post'), $imageName);
             $post->image = 'assets/images/post/' . $imageName;
         }
-    
+
         $post->save();
-    
+
         return redirect()->route('admin.post.index')->with('success', 'Post updated successfully.');
     }
-    
+
     public function destroy($id)
     {
         $post = Post::findOrFail($id);

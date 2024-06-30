@@ -56,4 +56,13 @@ class PostController extends Controller
 
         return response()->json($post);
     }
+
+
+
+    public function latestPosts()
+    {
+        $posts = Post::latest()->take(3)->get();
+
+        return response()->json($posts);
+    }
 }
