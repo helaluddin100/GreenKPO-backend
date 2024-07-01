@@ -127,8 +127,8 @@ class SliderController extends Controller
         $slider->status = $status;
     
         if ($request->hasFile('image')) {
-            // Remove old image
-            if ($slider->image) {
+            // Remove old image if it exists
+            if ($slider->image && file_exists(public_path($slider->image))) {
                 unlink(public_path($slider->image));
             }
     
@@ -139,8 +139,8 @@ class SliderController extends Controller
         }
     
         if ($request->hasFile('mobile_image')) {
-            // Remove old mobile image
-            if ($slider->mobile_image) {
+            // Remove old mobile image if it exists
+            if ($slider->mobile_image && file_exists(public_path($slider->mobile_image))) {
                 unlink(public_path($slider->mobile_image));
             }
     
@@ -182,5 +182,6 @@ class SliderController extends Controller
         // Redirect to the slider index route with a success message
         return redirect()->route('admin.slider.index')->with('success', 'Slider deleted successfully.');
     }
+    
     
 }

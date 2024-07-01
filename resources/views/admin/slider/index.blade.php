@@ -61,7 +61,7 @@
 
                                                 @if (Auth::user()->role_id == 1)
                                                     <form id="delete_form_{{ $slider->id }}"
-                                                        action="{{ route('admin.slider.destroy', $slider->id) }}" method="slider"
+                                                        action="{{ route('admin.slider.destroy', $slider->id) }}" method="post"
                                                         class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
