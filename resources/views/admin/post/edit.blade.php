@@ -36,6 +36,20 @@
                                             value="{{ $post->meta_keyword }}" name="meta_keyword">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="read_time" class="form-label">Read Time</label>
+                                        <input type="text" id="read_time" class="form-control" name="read_time" value="{{ $post->read_time  }}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="category" class="form-label">Category</label>
+                                        <input type="text" id="category" class="form-control" name="category" value="{{ $post->category }}">
+                                    </div>
+                                </div>
+
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="meta_descriptions" class="form-label">Meta Description</label>

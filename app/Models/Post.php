@@ -21,6 +21,8 @@ class Post extends Model
         'meta_descriptions',
         'meta_keyword',
         'view_count',
+        'read_time',
+        'category',
         'status',
     ];
 
