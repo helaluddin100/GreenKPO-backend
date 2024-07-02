@@ -56,6 +56,7 @@ Route::namespace('App\Http\Controllers')->group(function () {
         Route::resource('product', 'ProductController');
         Route::resource('contact', 'ContactController');
         Route::resource('slider', 'SliderController');
+        Route::resource('faq', 'FaqController');
     });
 });
 
