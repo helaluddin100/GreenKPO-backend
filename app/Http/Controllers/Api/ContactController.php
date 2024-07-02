@@ -7,6 +7,8 @@ use App\Models\Contact;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactFormSubmitted;
 
 class ContactController extends Controller
 {
@@ -20,14 +22,15 @@ class ContactController extends Controller
             'email' => 'required|email|max:255',
             'message' => 'required|string',
             'trams' => 'required|boolean',
-
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Create the contact record
         $contact = Contact::create($request->all());
+
 
         return response()->json(['message' => 'Contact form submitted successfully.', 'contact' => $contact], 201);
     }
