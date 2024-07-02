@@ -23,7 +23,7 @@ class ApiController extends Controller
 
     public function carbon_faq()
     {
-        $faqs = Faq::where('category', 'Carbon Democratisation')->get();
+        $faqs = Faq::where('category', 'Carbon Democratisation')->where('status', true)->get();
         return response()->json($faqs);
     }
 
@@ -31,14 +31,14 @@ class ApiController extends Controller
 
     public function considerGreenKpo()
     {
-        $faqs = Faq::where('category', 'Why should I consider Green KPO?')->get();
+        $faqs = Faq::where('category', 'Why should I consider Green KPO?')->where('status', true)->get();
         return response()->json($faqs);
     }
 
 
     public function faqProduct()
     {
-        $faqs = Faq::where('category', 'Product')->get();
+        $faqs = Faq::where('category', 'Product')->where('status', true)->get();
         return response()->json($faqs);
     }
 }
