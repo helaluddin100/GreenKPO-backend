@@ -54,6 +54,8 @@ Route::namespace('App\Http\Controllers')->group(function () {
         Route::resource('post', 'PostController');
         Route::resource('tag', 'TagController');
         Route::resource('product', 'ProductController');
+        Route::resource('contact', 'ContactController');
+        Route::resource('slider', 'SliderController');
     });
 });
 
