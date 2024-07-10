@@ -26,3 +26,4 @@ Route::get('/sliders', [ApiController::class, 'slider']);
 Route::get('/faqs/carbon-democratisation', [ApiController::class, 'carbon_faq']);
 Route::get('/faqs/why-should-i-consider-green-kpo', [ApiController::class, 'considerGreenKpo']);
 Route::get('/faqs/product', [ApiController::class, 'faqProduct']);
+Route::get('settings', 'App\Http\Controllers\API\SettingController@index')->name('api.settings.index');
