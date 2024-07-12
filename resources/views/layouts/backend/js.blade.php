@@ -62,7 +62,6 @@
           })
       }
   </script>
-
   <script>
       const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 

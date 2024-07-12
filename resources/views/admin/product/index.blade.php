@@ -59,7 +59,7 @@
                                                 @endif
                                             </td> --}}
                                             <td>
-                                                @if ($product->status === 1)
+                                                @if ($product->status == 1)
                                                     <span class="badge bg-success">Active</span>
                                                 @else
                                                     <span class="badge bg-primary">De Active</span>

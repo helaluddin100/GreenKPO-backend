@@ -40,7 +40,7 @@
                                             <td>{{ $tag->name }}</td>
 
                                             <td>
-                                                @if ($tag->status === 1)
+                                                @if ($tag->status == 1)
                                                     <span class="badge bg-success">Active</span>
                                                 @else
                                                     <span class="badge bg-primary">De Active</span>
@@ -56,8 +56,8 @@
 
                                                 @if (Auth::user()->role_id == 1)
                                                     <form id="delete_form_{{ $tag->id }}"
-                                                        action="{{ route('admin.tag.destroy', $tag->id) }}"
-                                                        method="post" class="d-inline">
+                                                        action="{{ route('admin.tag.destroy', $tag->id) }}" method="post"
+                                                        class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="button" class="btn btn-danger btn-icon delete-button"

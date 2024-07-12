@@ -47,7 +47,7 @@
                                             <td>{{ $contact->created_at->format('M d Y, H:i') }}</td>
 
                                             <td>
-                                                @if ($contact->status === 0)
+                                                @if ($contact->status == 0)
                                                     <span class="badge bg-primary">UnRead</span>
                                                 @else
                                                     <span class="badge bg-success">Read</span>

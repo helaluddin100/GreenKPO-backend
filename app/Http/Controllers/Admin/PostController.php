@@ -31,13 +31,19 @@ class PostController extends Controller
 
     public function uploadImage(Request $request)
     {
-        $uploadedFile = $request->file('file');
-        $filename = $uploadedFile->getClientOriginalName();
-        $path = $uploadedFile->storeAs('public/uploads', $filename);
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
-        $url = asset('storage/uploads/' . $filename);
+        if ($request->hasFile('file')) {
+            $image = $request->file('file');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/uploads'), $imageName);
 
-        return response()->json(['location' => $url]);
+            return response()->json(['location' => url('assets/images/uploads/' . $imageName)]);
+        }
+
+        return response()->json(['error' => 'No image file found'], 400);
     }
 
 

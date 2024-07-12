@@ -44,7 +44,7 @@
                                             <td>{{ $faq->category }}</td>
 
                                             <td>
-                                                @if ($faq->status === 1)
+                                                @if ($faq->status == 1)
                                                     <span class="badge bg-success">Active</span>
                                                 @else
                                                     <span class="badge bg-primary">De Active</span>

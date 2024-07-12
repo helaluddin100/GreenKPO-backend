@@ -45,9 +45,9 @@
 
                                             <td><img src="{{ asset($slider->image) }}" alt=""></td>
                                             <td><img src="{{ asset($slider->mobile_image) }}" alt=""></td>
-                                           
+
                                             <td>
-                                                @if ($slider->status === 1)
+                                                @if ($slider->status == 1)
                                                     <span class="badge bg-success">Active</span>
                                                 @else
                                                     <span class="badge bg-primary">De Active</span>
@@ -61,8 +61,8 @@
 
                                                 @if (Auth::user()->role_id == 1)
                                                     <form id="delete_form_{{ $slider->id }}"
-                                                        action="{{ route('admin.slider.destroy', $slider->id) }}" method="post"
-                                                        class="d-inline">
+                                                        action="{{ route('admin.slider.destroy', $slider->id) }}"
+                                                        method="post" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="button" class="btn btn-danger btn-icon delete-button"

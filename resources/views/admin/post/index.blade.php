@@ -53,7 +53,7 @@
                                                 @endforeach
                                             </td> --}}
                                             <td>
-                                                @if ($post->status === 1)
+                                                @if ($post->status == 1)
                                                     <span class="badge bg-success">Active</span>
                                                 @else
                                                     <span class="badge bg-primary">De Active</span>
