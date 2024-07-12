@@ -12,22 +12,27 @@ class PostController extends Controller
 
 
     public function getPosts(Request $request)
-    {
-        $perPage = $request->query('perPage', 10);
-        $page = $request->query('page', 1);
+{
+    $perPage = $request->query('perPage', 10);
+    $page = $request->query('page', 1);
 
-        $posts = Post::orderBy('created_at', 'desc')
-            ->skip(1)
-            ->paginate($perPage, ['*'], 'page', $page);
+    // Get the latest post
+    $latestPost = Post::orderBy('created_at', 'desc')->first();
 
-        // Append tag names to each post
-        $posts->getCollection()->transform(function ($post) {
-            $post->tag_names = $post->tag_names;
-            return $post;
-        });
+    // Get the paginated posts excluding the latest post
+    $posts = Post::where('id', '!=', $latestPost->id)
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage, ['*'], 'page', $page);
 
-        return response()->json($posts);
-    }
+    // Append tag names to each post
+    $posts->getCollection()->transform(function ($post) {
+        $post->tag_names = $post->tag_names;
+        return $post;
+    });
+
+    return response()->json($posts);
+}
+
 
     public function getLastPost()
     {
