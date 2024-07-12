@@ -9,6 +9,7 @@
     <meta name="description" content="Green KPO Admin Panel ">
     <meta name="author" content="Green KPO">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 
     <title> Admin - Green KPO</title>
 
@@ -19,6 +20,8 @@
     <!-- End fonts -->
 
     @include('layouts.backend.style')
+
+
 </head>
 
 <body>
@@ -48,7 +51,12 @@
     @include('layouts.backend.js')
     <!-- End custom js for this page -->
     @yield('js')
-
+    <style>
+        .tox.tox-silver-sink.tox-tinymce-aux,
+        .tox-notifications-container {
+            display: none !important;
+        }
+    </style>
 </body>
 
 </html>

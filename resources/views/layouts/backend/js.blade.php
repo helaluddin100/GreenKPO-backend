@@ -125,7 +125,7 @@
           },
           height: 600,
           image_caption: true,
-          quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+          quickbars_selection_toolbar: 'bold italic | quicklink h1 h2 h3 h4 h5 h6 | blockquote quickimage quicktable',
           noneditable_class: 'mceNonEditable',
           toolbar_mode: 'sliding',
           contextmenu: 'link image table',
