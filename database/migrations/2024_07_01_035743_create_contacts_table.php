@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name')->nullable();
             $table->string('email');
-            $table->string('message')->nullable();;
+            $table->text('message')->nullable();;
             $table->boolean('trams');
             $table->boolean('status')->default(false);
             $table->timestamps();
